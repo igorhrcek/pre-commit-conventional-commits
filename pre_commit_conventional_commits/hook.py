@@ -56,13 +56,19 @@ def main(argv=[]):
     else:
         print(
             f"""
-            {Colors.LRED}Bad commit message: {Colors.RESTORE} {message}
-            {Colors.YELLOW}Your commit message does not follow Conventional Commits formatting.
+{Colors.LRED}Bad commit message: {Colors.RESTORE} {message}
+{Colors.YELLOW}Your commit message does not follow Conventional Commits formatting.
 
-            Conventional Commits start with one of the below types, followed by a colon,
-            followed by the commit message:{Colors.RESTORE}
+Conventional Commits start with one of the below types, followed by a colon,
+followed by the commit message:{Colors.RESTORE}
 
-            {" ".join(convnetional_types_list(args.types))}
+{" ".join(convnetional_types_list(args.types))}
+
+{Colors.YELLOW}Good examples:{Colors.RESTORE}
+feat: Added new feature
+feat(billing): Improved invoices
+fix: Fixed speed of execution
+feat!: This is breaking change
             """
         )
         return RESULT_FAIL
