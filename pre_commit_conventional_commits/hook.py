@@ -24,6 +24,13 @@ RESULT_SUCCESS = 0
 RESULT_FAIL = 1
 
 
+class Colors:
+    LBLUE = "\033[00;34m"
+    LRED = "\033[01;31m"
+    RESTORE = "\033[0m"
+    YELLOW = "\033[00;33m"
+
+
 def main(argv=[]):
     # Allow additiional params to be passed in configuration
     parser = argparse.ArgumentParser(
@@ -44,14 +51,21 @@ def main(argv=[]):
     with open(args.input, encoding="utf-8") as f:
         message = f.read()
 
-    # Define the regex pattern for Conventional Commits
-    pattern = r"^(\w+)(\(([\w\s-]+)\))?: ([\w\s-]+)$"
-
-    # Check if the message matches the pattern
-    if re.match(pattern, message):
+    if is_commit_conventional(message, args.types):
         return RESULT_SUCCESS
     else:
-        print("Your commit message is incorrect")
+        print(
+            f"""
+            {Colors.LRED}Bad commit message: {Colors.RESTORE} {message}
+            {Colors.YELLOW}Your commit message does not follow Conventional Commits formatting.
+
+            Conventional Commits start with one of the below types, followed by a colon,
+            followed by the commit message:{Colors.RESTORE}
+
+            {" ".join(convnetional_types_list(args.types))}
+            """
+        )
+        return RESULT_FAIL
 
 
 def regex_types(types):
@@ -63,7 +77,7 @@ def regex_types(types):
 
 def regex_scope():
     """
-    Regex for an optional scope
+    Regex for an optional scope (ie. feat(ci))
     """
     return r"(\([\w \/:-]+\))?"
 
@@ -86,11 +100,10 @@ def convnetional_types_list(types=[]):
     """
     Returns a final list of Convetional Commits types that is merged from passed types and CONVENTIONAL_TYPES
     """
-
-    if set(types) and set(CONVENTIONAL_TYPES) == set():
+    if set(types):
         return CONVENTIONAL_TYPES + types
 
-    return types
+    return CONVENTIONAL_TYPES
 
 
 def is_commit_conventional(input, types=DEFAULT_TYPES):
